@@ -2,6 +2,6 @@
     display: none;
 }
 
-.modal-content {
+.modal-content, .scroll-disabled {
     overflow: hidden;
 }
