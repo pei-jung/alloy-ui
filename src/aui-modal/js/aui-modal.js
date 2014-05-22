@@ -60,15 +60,14 @@ A.Modal = A.Base.create('modal', A.Widget, [
             instance.after('resize:end', A.bind(instance._syncResizeDimensions, instance)),
             instance.after('draggableChange', instance._afterDraggableChange),
             instance.after('resizableChange', instance._afterResizableChange),
-            instance.after('visibleChange', instance._afterVisibleChange),
-            instance.on('destroy', function() { instance._setParentScrollClass(false); })
+            instance.after('visibleChange', instance._afterVisibleChange)
         ];
 
         instance._applyPlugin(instance._onUserInitInteraction);
 
         instance._eventHandles = eventHandles;
 
-        instance._setParentScrollClass(instance.get('visible'));
+        instance._toggleParentScrollClass(instance.get('visible'));
     },
 
     /**
@@ -162,11 +161,12 @@ A.Modal = A.Base.create('modal', A.Widget, [
      * @protected
      */
     _afterVisibleChange: function(event) {
-        var instance = this;
+        var instance = this,
+            newVal = event.newVal;
 
-        instance._setParentScrollClass(event.newVal);
-        
-        if (!event.newVal && instance.get('destroyOnHide')) {
+        instance._toggleParentScrollClass(newVal);
+
+        if (!newVal && instance.get('destroyOnHide')) {
             A.soon(A.bind('destroy', instance));
         }
     },
@@ -282,28 +282,35 @@ A.Modal = A.Base.create('modal', A.Widget, [
 
         A.before(instance._beforeResizeCorrectDimensions, instance.resize, '_correctDimensions', instance);
     },
-    
+
     /**
-     * Sets a CSS class to the html and body element to disable scrolling in parent window. 
+     * Sets a CSS class to the html and body element to disable scrolling in parent window.
      *
      * @method _setParentScrollClass
      * @param set
      * @protected
      */
-    _setParentScrollClass: function(set) {
-        var instance = this,
-            body = A.one('body'),
-            html = A.one('html');
+    _toggleParentScrollClass: function(force) {
+        var instance = this;
 
         if (!instance.get('parentScrollable')) {
-            if (set) {
-                body.addClass('scroll-disabled');
-                html.addClass('scroll-disabled');
+            var body = instance._bodyEl,
+                documentEl = instance._documentEl;
+
+            if (!body) {
+                body = A.getBody();
+
+                instance._bodyEl = body;
             }
-            else {
-                body.removeClass('scroll-disabled');
-                html.removeClass('scroll-disabled');
+
+            if (!documentEl) {
+                documentEl = A.getDoc().get('documentElement');
+
+                instance._documentEl = documentEl;
             }
+
+            body.toggleClass('scroll-disabled', force);
+            documentEl.toggleClass('scroll-disabled', force);
         }
     },
 
