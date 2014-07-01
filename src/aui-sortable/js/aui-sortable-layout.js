@@ -50,6 +50,9 @@ var Lang = A.Lang,
     CSS_ICON_CIRCLE_TRIANGLE_L = getCN('icon', 'circle', 'triangle', 'l'),
     CSS_ICON_CIRCLE_TRIANGLE_R = getCN('icon', 'circle', 'triangle', 'r'),
 
+    KEY_ARROW_LEFT = 37,
+    KEY_ARROW_RIGHT = 39,
+
     TPL_PLACEHOLDER = '<div class="' + CSS_DRAG_INDICATOR + '">' +
         '<div class="' + concat(CSS_DRAG_INDICATOR_ICON, CSS_DRAG_INDICATOR_ICON_LEFT, CSS_ICON,
             CSS_ICON_CIRCLE_TRIANGLE_R) + '"></div>' +
@@ -164,6 +167,24 @@ var SortableLayout = A.Component.create({
          */
         dropNodes: {
             setter: '_setDropNodes'
+        },
+
+        /**
+         * Defines the keyboard configuration object for
+         * `Plugin.NodeFocusManager`.
+         *
+         * @attribute focusmanager
+         * @type {Object}
+         */
+        focusmanager: {
+            value: {
+                focusClass: 'focus',
+                keys: {
+                    next: 'down:' + KEY_ARROW_RIGHT,
+                    previous: 'down:' + KEY_ARROW_LEFT
+                }
+            },
+            writeOnce: 'initOnly'
         },
 
         /**
@@ -285,6 +306,7 @@ var SortableLayout = A.Component.create({
 
             instance._bindDDEvents();
             instance._bindDropZones();
+            instance._bindFocusManager();
         },
 
         /**
@@ -540,6 +562,22 @@ var SortableLayout = A.Component.create({
                     instance.addDropNode(node);
                 });
             }
+        },
+
+        /**
+         * Binds the `Plugin.NodeFocusManager` that handle keyboard
+         * navigation.
+         *
+         * @method _bindFocusManager
+         * @protected
+         */
+        _bindFocusManager: function() {
+            var instance = this,
+                body = A.one('body'),
+                focusmanager = instance.get('focusmanager');
+
+            focusmanager.descendants = instance.get('dragNodes');
+            body.plug(A.Plugin.NodeFocusManager, focusmanager);
         },
 
         /**
