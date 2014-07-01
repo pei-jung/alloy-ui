@@ -578,6 +578,7 @@ var SortableLayout = A.Component.create({
 
             focusmanager.descendants = instance.get('dragNodes');
             body.plug(A.Plugin.NodeFocusManager, focusmanager);
+            instance._focusmanager = body.focusManager;
         },
 
         /**
@@ -673,6 +674,21 @@ var SortableLayout = A.Component.create({
             instance.lastQuadrant = quadrant;
             instance.lastXDirection = instance.XDirection;
             instance.lastYDirection = instance.YDirection;
+        },
+
+        /**
+         * Focuses currently active draggable object.
+         *
+         * @method _focusActiveObject
+         * @protected
+         */
+        _focusActiveObject: function() {
+            var instance = this,
+                activeNode = instance._getAppendNode(),
+                focusmanager = instance._focusmanager,
+                index = focusmanager.get('descendants').indexOf(activeNode);
+
+            focusmanager.focus(index);
         },
 
         /**
@@ -850,6 +866,9 @@ var SortableLayout = A.Component.create({
             instance.lastQuadrant = null;
             instance.lastXDirection = null;
             instance.lastYDirection = null;
+
+            instance._focusmanager.refresh();
+            instance._focusActiveObject();
         },
 
         /**
