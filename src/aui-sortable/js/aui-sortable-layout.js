@@ -977,11 +977,11 @@ var SortableLayout = A.Component.create({
         _onDragExit: function(event) {
             var instance = this;
 
-            instance._syncPlaceholderUI(event);
-
             instance.activeDrop = DDM.activeDrop;
 
             instance.lastActiveDrop = DDM.activeDrop;
+
+            instance._syncPlaceholderUI(event);
         },
 
         /**
