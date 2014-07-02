@@ -52,6 +52,7 @@ var Lang = A.Lang,
 
     KEY_ARROW_LEFT = 37,
     KEY_ARROW_RIGHT = 39,
+    KEY_ENTER = 13,
 
     TPL_PLACEHOLDER = '<div class="' + CSS_DRAG_INDICATOR + '">' +
         '<div class="' + concat(CSS_DRAG_INDICATOR_ICON, CSS_DRAG_INDICATOR_ICON_LEFT, CSS_ICON,
@@ -294,7 +295,10 @@ var SortableLayout = A.Component.create({
          * @protected
          */
         bindUI: function() {
-            var instance = this;
+            var instance = this,
+                dragNodes = A.all(instance.get('dragNodes'));
+
+            dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance);
 
             // publishing placeholderAlign event
             instance.publish('placeholderAlign', {
@@ -739,6 +743,35 @@ var SortableLayout = A.Component.create({
                     }
                 }
             }
+        },
+
+        /**
+         * Triggers when a drag node is selected. Sets focus manager to drop targets.
+         *
+         * @method _selectDropTarget
+         * @protected
+         */
+        _selectDropTarget: function() {
+            var instance = this,
+                dropSelector = 'yui3-dd-drop';
+
+            instance._setFocusElements(dropSelector);
+        },
+
+        /**
+         * Sets the descendants as focusable elements.
+         *
+         * @method _setFocusElements
+         * @param descendants {String} String representing the CSS selector used to define the focusable elements
+         * @protected
+         */
+        _setFocusElements: function(descendants) {
+            var instance = this,
+                focusmanager = instance._focusmanager;
+
+            focusmanager.set('descendants', descendants);
+            focusmanager.refresh();
+            focusmanager.focus();
         },
 
         /**
