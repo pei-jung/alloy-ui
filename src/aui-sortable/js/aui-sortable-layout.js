@@ -749,6 +749,8 @@ var SortableLayout = A.Component.create({
 
             event.halt();
 
+            DDM.activeDrag.get('node').simulate('mouseup');
+
             instance._focusHandle.detach();
             instance._selectDropHandle.detach();
 
@@ -810,6 +812,8 @@ var SortableLayout = A.Component.create({
                 dropNodes = A.all(dropSelector);
 
             event.halt();
+
+            event.target.simulate('mousedown');
 
             instance._selectDragHandle.detach();
             instance._selectDropHandle = dropNodes.on('key', instance._onDropTargetSelected, 'down:' + KEY_ENTER, instance);
