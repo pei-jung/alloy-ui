@@ -298,7 +298,7 @@ var SortableLayout = A.Component.create({
             var instance = this,
                 dragNodes = A.all(instance.get('dragNodes'));
 
-            dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance);
+            instance._selectDragHandle = dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance);
 
             // publishing placeholderAlign event
             instance.publish('placeholderAlign', {
@@ -739,6 +739,25 @@ var SortableLayout = A.Component.create({
         },
 
         /**
+         * Triggers when a drop target is selected.
+         *
+         * @method _onDropTargetSelected
+         * @protected
+         */
+        _onDropTargetSelected: function(event) {
+            var instance = this;
+
+            instance._focusHandle.detach();
+            instance._selectDropHandle.detach();
+
+            var dragClass = instance.get('dragNodes'),
+                dragNodes = A.all(dragClass);
+
+            instance._setFocusElements(dragClass);
+            instance._selectDragHandle = dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance);
+        },
+
+        /**
          * Sets the position of drag/drop nodes.
          *
          * @method _positionNode
@@ -783,13 +802,17 @@ var SortableLayout = A.Component.create({
          * @method _selectDropTarget
          * @protected
          */
-        _selectDropTarget: function() {
+        _selectDropTarget: function(event) {
             var instance = this,
-                dropSelector = 'yui3-dd-drop';
+                dropSelector = '.yui3-dd-drop',
+                dropNodes = A.all(dropSelector);
+
+            instance._selectDragHandle.detach();
+            instance._selectDropHandle = dropNodes.on('key', instance._onDropTargetSelected, 'down:' + KEY_ENTER, instance);
 
             instance._setFocusElements(dropSelector);
 
-            instance._focusmanager.on('focusedChange', instance._onDropTargetFocused, instance);
+            instance._focusHandle = instance._focusmanager.on('focusedChange', instance._onDropTargetFocused, instance);
         },
 
         /**
