@@ -747,6 +747,8 @@ var SortableLayout = A.Component.create({
         _onDropTargetSelected: function(event) {
             var instance = this;
 
+            event.halt();
+
             instance._focusHandle.detach();
             instance._selectDropHandle.detach();
 
@@ -806,6 +808,8 @@ var SortableLayout = A.Component.create({
             var instance = this,
                 dropSelector = '.yui3-dd-drop',
                 dropNodes = A.all(dropSelector);
+
+            event.halt();
 
             instance._selectDragHandle.detach();
             instance._selectDropHandle = dropNodes.on('key', instance._onDropTargetSelected, 'down:' + KEY_ENTER, instance);
