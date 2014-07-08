@@ -298,7 +298,8 @@ var SortableLayout = A.Component.create({
             var instance = this,
                 dragNodes = A.all(instance.get('dragNodes'));
 
-            instance._selectDragHandle = dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance);
+            instance._eventHandles = [];
+            instance._eventHandles.push(dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance));
 
             // publishing placeholderAlign event
             instance.publish('placeholderAlign', {
@@ -615,6 +616,20 @@ var SortableLayout = A.Component.create({
         },
 
         /**
+         * Detaches all event handles in the _eventHandles array.
+         *
+         * @method _detachEventHandles
+         * @protected
+         */
+        _detachEventHandles: function() {
+            var instance = this;
+
+            A.Array.each(instance._eventHandles, function(handle) {
+                handle.detach();
+            });
+        },
+
+        /**
          * Gets a collection formed by `drag`, `drop`, `quadrant`, `XDirection`,
          * and `YDirection` instances.
          *
@@ -752,14 +767,13 @@ var SortableLayout = A.Component.create({
 
             dragNode.simulate('mouseup');
 
-            instance._focusHandle.detach();
-            instance._selectDropHandle.detach();
+            instance._detachEventHandles();
 
             var dragClass = instance.get('dragNodes'),
                 dragNodes = A.all(dragClass);
 
             instance._setFocusElements(dragClass, dragNode);
-            instance._selectDragHandle = dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance);
+            instance._eventHandles.push(dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance));
         },
 
         /**
@@ -816,12 +830,12 @@ var SortableLayout = A.Component.create({
 
             event.target.simulate('mousedown');
 
-            instance._selectDragHandle.detach();
-            instance._selectDropHandle = dropNodes.on('key', instance._onDropTargetSelected, 'down:' + KEY_ENTER, instance);
+            instance._detachEventHandles();
+            instance._eventHandles.push(dropNodes.on('key', instance._onDropTargetSelected, 'down:' + KEY_ENTER, instance));
 
             instance._setFocusElements(dropSelector);
 
-            instance._focusHandle = instance._focusmanager.on('focusedChange', instance._onDropTargetFocused, instance);
+            instance._eventHandles.push(instance._focusmanager.on('focusedChange', instance._onDropTargetFocused, instance));
         },
 
         /**
