@@ -707,6 +707,38 @@ var SortableLayout = A.Component.create({
         },
 
         /**
+         * Triggers when a drop target is focused.
+         *
+         * @method _onDropTargetFocused
+         * @protected
+         */
+        _onDropTargetFocused: function(event) {
+            var instance = this,
+                focusmanager = instance._focusmanager,
+                activeNode = focusmanager._focusedNode,
+                activeTarget = DDM.getDrop(activeNode),
+                lastDrop = DDM.activeDrop;
+
+            activeNode.addClass(DDM.CSS_PREFIX + '-drop-over');
+            DDM.activeDrop = activeTarget;
+            DDM.otherDrops[activeTarget] = activeTarget;
+            activeTarget.overTarget = true;
+            activeTarget.fire('drop:enter', { drop: activeTarget, drag: DDM.activeDrag });
+            DDM.activeDrag.fire('drag:enter', { drop: activeTarget, drag: DDM.activeDrag });
+            DDM.activeDrag.get('node').addClass(DDM.CSS_PREFIX + '-drag-over');
+
+            // clean up last drop target
+            if (lastDrop) {
+                lastDrop.overTarget = false;
+                lastDrop.get('node').removeClass(DDM.CSS_PREFIX + '-drop-over');
+                DDM.activeDrag.get('node').removeClass(DDM.CSS_PREFIX + '-drag-over');
+                lastDrop.fire('drop:exit', { drop: lastDrop, drag: DDM.activeDrag });
+                DDM.activeDrag.fire('drag:exit', { drop: lastDrop, drag: DDM.activeDrag });
+                delete DDM.otherDrops[lastDrop];                
+            }
+        },
+
+        /**
          * Sets the position of drag/drop nodes.
          *
          * @method _positionNode
@@ -756,6 +788,8 @@ var SortableLayout = A.Component.create({
                 dropSelector = 'yui3-dd-drop';
 
             instance._setFocusElements(dropSelector);
+
+            instance._focusmanager.on('focusedChange', instance._onDropTargetFocused, instance);
         },
 
         /**
