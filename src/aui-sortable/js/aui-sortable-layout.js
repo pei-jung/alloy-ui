@@ -745,11 +745,12 @@ var SortableLayout = A.Component.create({
          * @protected
          */
         _onDropTargetSelected: function(event) {
-            var instance = this;
+            var instance = this,
+                dragNode = DDM.activeDrag.get('node');
 
             event.halt();
 
-            DDM.activeDrag.get('node').simulate('mouseup');
+            dragNode.simulate('mouseup');
 
             instance._focusHandle.detach();
             instance._selectDropHandle.detach();
@@ -757,7 +758,7 @@ var SortableLayout = A.Component.create({
             var dragClass = instance.get('dragNodes'),
                 dragNodes = A.all(dragClass);
 
-            instance._setFocusElements(dragClass);
+            instance._setFocusElements(dragClass, dragNode);
             instance._selectDragHandle = dragNodes.on('key', instance._selectDropTarget, 'down:' + KEY_ENTER, instance);
         },
 
@@ -830,13 +831,19 @@ var SortableLayout = A.Component.create({
          * @param descendants {String} String representing the CSS selector used to define the focusable elements
          * @protected
          */
-        _setFocusElements: function(descendants) {
+        _setFocusElements: function(descendants, node) {
             var instance = this,
-                focusmanager = instance._focusmanager;
+                focusmanager = instance._focusmanager,
+                index = 0;
 
             focusmanager.set('descendants', descendants);
             focusmanager.refresh();
-            focusmanager.focus();
+
+            if (node instanceof A.Node) {
+                index = focusmanager.get('descendants').indexOf(node);
+            }
+
+            focusmanager.focus(index);
         },
 
         /**
