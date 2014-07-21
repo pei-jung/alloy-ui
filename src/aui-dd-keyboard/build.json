@@ -1,0 +1,10 @@
+{
+    "name": "aui-dd-keyboard",
+    "builds": {
+        "aui-dd-keyboard": {
+            "jsfiles": [
+                "js/aui-dd-keyboard.js"
+            ]
+        }
+    }
+}

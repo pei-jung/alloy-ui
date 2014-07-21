@@ -1,0 +1,10 @@
+{
+    "aui-dd-keyboard": {
+        "requires": [
+            "dd-drag",
+            "dd-drop",
+            "event-key",
+            "node-event-simulate"
+        ]
+    }
+}
