@@ -30,6 +30,12 @@ var Drag = A.Component.create({
 
     prototype: {
         /**
+         * Mousedown clickTimeThresh. See dd-drag clickTimeThresh
+         * @type Number
+         */
+        _clickTimeThresh: null,
+
+        /**
          * Index of current drop target in `_targets`
          * @type Number
          */
@@ -78,6 +84,7 @@ var Drag = A.Component.create({
             // add drag object to the tab order
             node.set('tabIndex', 0);
 
+            instance._clickTimeThresh = instance.get('clickTimeThresh');
             instance._eventHandles = [];
             instance._isDragging = false;
 
@@ -101,6 +108,8 @@ var Drag = A.Component.create({
 
             // set focus back to dragged object after drop
             instance.get('node').focus();
+
+            instance.set('clickTimeThresh', instance._clickTimeThresh);
 
             instance._isDragging = false;
         },
@@ -244,6 +253,7 @@ var Drag = A.Component.create({
                 doc = A.one(DOC),
                 node = instance.get('node');
 
+            instance.set('clickTimeThresh', 0);
             instance._handleMouseDownEvent(event.ev);
             instance._eventHandles.push(
                 doc.on('keydown', A.bind(instance._onSelectionKeyDown, instance))
