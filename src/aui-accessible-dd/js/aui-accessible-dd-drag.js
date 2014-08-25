@@ -226,6 +226,8 @@ var Drag = A.Component.create({
                     nextKey = instance.get('keys.next') || KEY_ARROW_RIGHT,
                     prevKey = instance.get('keys.previous') || KEY_ARROW_LEFT;
 
+                A.one('body').focus();
+
                 instance._targets = instance._getDropTargets();
                 
                 // finds the index of the drag node and removes it from the drop targets list
