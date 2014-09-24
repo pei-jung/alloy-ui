@@ -4,6 +4,7 @@
 
 ## @VERSION@
 
+* [AUI-1671](https://issues.liferay.com/browse/AUI-1671) Convert scheduler 'view' buttons into a dropdown list
 * [AUI-1660](https://issues.liferay.com/browse/AUI-1660) Move scheduler date down into the calendar views
 * [AUI-1641](https://issues.liferay.com/browse/AUI-1641) Events in agenda view does not respond to "click" event when scheduler is disabled
 * [AUI-1635](https://issues.liferay.com/browse/AUI-1635) Fix lint problems
